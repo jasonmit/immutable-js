@@ -263,6 +263,7 @@ class IterableSeq extends IndexedSeq {
 
 class IteratorSeq extends IndexedSeq {
   constructor(iterator) {
+    super();
     this._iterator = iterator;
     this._iteratorCache = [];
   }
