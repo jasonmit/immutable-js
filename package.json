@@ -55,7 +55,7 @@
     "node": ">=0.8.0"
   },
   "files": [
-    "dist",
+    "src",
     "contrib",
     "README.md",
     "LICENSE",
