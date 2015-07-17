@@ -18,6 +18,7 @@ export class OrderedSet extends Set {
   // @pragma Construction
 
   constructor(value) {
+    super();
     return value === null || value === undefined ? emptyOrderedSet() :
       isOrderedSet(value) ? value :
       emptyOrderedSet().withMutations(set => {

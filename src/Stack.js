@@ -20,6 +20,7 @@ export class Stack extends IndexedCollection {
   // @pragma Construction
 
   constructor(value) {
+    super();
     return value === null || value === undefined ? emptyStack() :
       isStack(value) ? value :
       emptyStack().unshiftAll(value);

@@ -23,6 +23,7 @@ export class List extends IndexedCollection {
   // @pragma Construction
 
   constructor(value) {
+    super();
     var empty = emptyList();
     if (value === null || value === undefined) {
       return empty;
@@ -57,12 +58,12 @@ export class List extends IndexedCollection {
 
   get(index, notSetValue) {
     index = wrapIndex(this, index);
-    if (index < 0 || index >= this.size) {
-      return notSetValue;
+    if (index >= 0 && index < this.size) {
+      index += this._origin;
+      var node = listNodeFor(this, index);
+      return node && node.array[index & MASK];
     }
-    index += this._origin;
-    var node = listNodeFor(this, index);
-    return node && node.array[index & MASK];
+    return notSetValue;
   }
 
   // @pragma Modification
@@ -258,29 +259,25 @@ class VNode {
   }
 
   removeAfter(ownerID, level, index) {
-    if (index === level ? 1 << level : 0 || this.array.length === 0) {
+    if (index === (level ? 1 << level : 0) || this.array.length === 0) {
       return this;
     }
     var sizeIndex = ((index - 1) >>> level) & MASK;
     if (sizeIndex >= this.array.length) {
       return this;
     }
-    var removingLast = sizeIndex === this.array.length - 1;
+
     var newChild;
     if (level > 0) {
       var oldChild = this.array[sizeIndex];
       newChild = oldChild && oldChild.removeAfter(ownerID, level - SHIFT, index);
-      if (newChild === oldChild && removingLast) {
+      if (newChild === oldChild && sizeIndex === this.array.length - 1) {
         return this;
       }
     }
-    if (removingLast && !newChild) {
-      return this;
-    }
+
     var editable = editableVNode(this, ownerID);
-    if (!removingLast) {
-      editable.array.pop();
-    }
+    editable.array.splice(sizeIndex + 1);
     if (newChild) {
       editable.array[sizeIndex] = newChild;
     }
@@ -371,6 +368,10 @@ export function emptyList() {
 
 function updateList(list, index, value) {
   index = wrapIndex(list, index);
+
+  if (index !== index) {
+    return list;
+  }
 
   if (index >= list.size || index < 0) {
     return list.withMutations(list => {

@@ -9,7 +9,7 @@
 
 import { is } from './is'
 import { fromJS } from './fromJS'
-import { isIterable, KeyedIterable } from './Iterable'
+import { isIterable, KeyedIterable, isOrdered } from './Iterable'
 import { KeyedCollection } from './Collection'
 import { DELETE, SHIFT, SIZE, MASK, NOT_SET, CHANGE_LENGTH, DID_ALTER, OwnerID,
           MakeRef, SetRef, arrCopy } from './TrieUtils'
@@ -28,8 +28,9 @@ export class Map extends KeyedCollection {
   // @pragma Construction
 
   constructor(value) {
+    super();
     return value === null || value === undefined ? emptyMap() :
-      isMap(value) ? value :
+      isMap(value) && !isOrdered(value) ? value :
       emptyMap().withMutations(map => {
         var iter = KeyedIterable(value);
         assertNotInfinite(iter.size);
@@ -550,6 +551,7 @@ ValueNode.prototype.iterate = function (fn, reverse) {
 class MapIterator extends Iterator {
 
   constructor(map, type, reverse) {
+    super();
     this._type = type;
     this._reverse = reverse;
     this._stack = map._root && mapIteratorFrame(map._root);

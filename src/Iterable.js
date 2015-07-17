@@ -18,18 +18,21 @@ export class Iterable {
 
 export class KeyedIterable extends Iterable {
   constructor(value) {
+    super();
     return isKeyed(value) ? value : KeyedSeq(value);
   }
 }
 
 export class IndexedIterable extends Iterable {
   constructor(value) {
+    super();
     return isIndexed(value) ? value : IndexedSeq(value);
   }
 }
 
 export class SetIterable extends Iterable {
   constructor(value) {
+    super();
     return isIterable(value) && !isAssociative(value) ? value : SetSeq(value);
   }
 }
